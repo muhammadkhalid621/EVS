@@ -278,7 +278,6 @@ class SignUPApp(MDApp):
                 self.id_check(random.randint(0, 999))
         return ID
 
-
     def signup2(self):
         self.signupAddress = self.strng.get_screen('signupscreen2').ids.address.text
         self.signupDOB = self.strng.get_screen('signupscreen2').ids.date_picker.text
@@ -447,7 +446,7 @@ class SignUPApp(MDApp):
             Keys = self.a.keys()
 
             MDApp.get_running_app().root.current = 'detection'
-            self.dashboard()
+
 
         else:
             cancel_btn_username_dialogue = MDFlatButton(text='Retry', on_release=self.close_username_dialog)
@@ -519,6 +518,7 @@ class SignUPApp(MDApp):
     def switch(self):
         print('function called')
         MDApp.get_running_app().root.current = 'dashboard'
+        self.dashboard()
 
     def dashboard(self):
         directory = str(self.a['ImageID'])
@@ -527,6 +527,7 @@ class SignUPApp(MDApp):
         self.strng.get_screen('dashboard').ids.CNIC.text = 'CNIC: ' + str(self.a['CNIC'])
         self.strng.get_screen('dashboard'). \
             ids.Sector.text = 'Sector: ' + str(self.a['Sector'])
+        self.storage.child('Voter Images/' + directory + '.jpg').download('/', 'user.' + directory + ".jpg")
         self.strng.get_screen('dashboard').ids.avatar.source = 'user.' + directory + ".jpg"
 
         candidates_info = self.db.collection('Candidates').where(u'Sector', u'==', self.a['Sector']).get()
@@ -594,7 +595,7 @@ class SignUPApp(MDApp):
                 votes = docs.to_dict()
                 vote = int(votes['Number of Votes']) + int(1)
                 self.db.collection('Candidates').document(CNIC).set({'Candidate Name': votes['Candidate Name'],
-                                                                     'Party Name': votes['PartyName'],
+                                                                     'PartyName': votes['PartyName'],
                                                                      'CNIC': votes['CNIC'],
                                                                      'Town': votes['Town'],
                                                                      'Sector': votes['Sector'],
@@ -678,6 +679,7 @@ class SignUPApp(MDApp):
         self.storage.child('Voter Images/' + directory + '.jpg').put('user.' + directory + ".jpg")
         toast('Image Uploaded')
         MDApp.get_running_app().root.current = 'loginscreen1'
+
 
 Config.set('graphics', 'fullscreen', 0)
 SignUPApp().run()
