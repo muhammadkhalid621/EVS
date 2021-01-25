@@ -41,9 +41,9 @@ ScreenManager:
         hint_text:'enter AdminID'
         on_text_validate:password.focus = True
         required: True
-        helper_text:'or click on forgot username'
+        helper_text:'Required'
         helper_text_mode: 'on_error'
-        icon_right:"android"
+        icon_right:"account-box"
         icon_right_color: app.theme_cls.primary_color
         pos_hint:{'center_x': 0.5, 'center_y': 0.65}
         size_hint_x:None
@@ -54,9 +54,9 @@ ScreenManager:
         hint_text:'enter password'
         password: True
         required: True
-        helper_text:'or click on forgot username'
+        helper_text:'Required'
         helper_text_mode: 'on_error'
-        icon_right:"android"
+        icon_right:"eye-off"
         icon_right_color: app.theme_cls.primary_color
         pos_hint:{'center_x': 0.5, 'center_y': 0.5}
         size_hint_x:None
@@ -184,19 +184,7 @@ ScreenManager:
         size_hint_y: None  # Tells the layout to ignore the size_hint in y dir
         height: dp(200)
         pos_hint: {"center_x":.2,"center_y":.65}
-        # FloatLayout:
-        #     pos_hint : {"center_x":.5,"center_y":.3}
-        #     canvas:
-        #         Color:
-        #             rgb: 1, 1, 1
-        #         Ellipse:
-        #             # id: imagePath
-        #             pos: 80, 360
-        #             size: 200 , 200 
-        #             # source: 'saad.jpeg'
-        #             angle_start: 0
-        #             angle_end: 360
-        # 
+        
     MDLabel :
         text : 'Profile Window '
         font_style : 'Button'
@@ -455,7 +443,7 @@ ScreenManager:
         font_size:25
         pos_hint:{'center_x': 0.5, 'center_y': 0.35}
         on_press:
-            app.vote_result()
+            app.set_time_result()
 
 
     
@@ -477,13 +465,13 @@ ScreenManager:
         id : candidate_name
         hint_text: "Candidate Name"
         on_text_validate:party_name.focus = True
+        icon_right : "account-box"
         required: True
         helper_text_mode: "on_error"
-        helper_text: "Required and must not exceed 30 characters"
-        max_text_length: 30
+        helper_text: "Required"
         size_hint_x:None
         width:250
-        pos_hint:{'center_x': 0.5, 'center_y': 0.9}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.8}
         
     MDTextField:
         id : party_name
@@ -491,24 +479,26 @@ ScreenManager:
         on_text_validate:cnic.focus = True
         required: True
         helper_text_mode: "on_error"
-        helper_text: "Required and must not exceed 20 characters"
-        max_text_length: 20
+        icon_right : "account-box"
+        helper_text: "Required"
         size_hint_x:None
         width:250
-        pos_hint:{'center_x': 0.5, 'center_y': 0.8}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.7}
         on_focus: if self.focus: app.menu_party.open()
 
     MDTextField:
         id : cnic
         hint_text: "CNIC"
         on_text_validate:town.focus = True
+        input_filter : 'int'
         required: True
         helper_text_mode: "on_error"
-        helper_text: "Required and must not exceed 13 characters"
+        icon_right : "id-card"
+        helper_text: "Required"
         max_text_length: 13
         size_hint_x:None
         width:250
-        pos_hint:{'center_x': 0.5, 'center_y': 0.7}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.6}
 
     MDTextField:
         id : town
@@ -516,24 +506,24 @@ ScreenManager:
         on_text_validate:sector.focus = True
         required: True
         helper_text_mode: "on_error"
-        helper_text: "Required and must not exceed 20 characters"
-        max_text_length: 20
-        size_hint_x:None
-        width:250
-        pos_hint:{'center_x': 0.5, 'center_y': 0.6}
-        on_focus: if self.focus: app.menu.open()
-
-    MDTextField:
-        id : sector
-        hint_text: "Sector"
-        required: True
-        helper_text_mode: "on_error"
-        helper_text: "Required and must not exceed 30 characters"
-        max_text_length: 20
+        icon_right : "home"
+        helper_text: "Required"
         size_hint_x:None
         width:250
         pos_hint:{'center_x': 0.5, 'center_y': 0.5}
-        on_focus: if self.focus: app.menu_sector.open()
+        on_focus: if self.focus: app.menu.open()
+
+    # MDTextField:
+    #     id : sector
+    #     hint_text: "Sector"
+    #     required: True
+    #     helper_text_mode: "on_error"
+    #     helper_text: "Required and must not exceed 30 characters"
+    #     max_text_length: 20
+    #     size_hint_x:None
+    #     width:250
+    #     pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+    #     on_focus: if self.focus: app.menu_sector.open()
         
     MDRectangleFlatButton:
         text:'SUBMIT'
@@ -556,9 +546,9 @@ ScreenManager:
         id: start_time_registration
         hint_text:'enter start time for registration'
         on_text_validate:end_time_registration.focus = True
-        helper_text:'year, month, date'
+        helper_text:'2021-01-25'
         helper_text_mode: 'on_focus'
-        icon_right:"android"
+        icon_right:"clock"
         icon_right_color: app.theme_cls.primary_color
         pos_hint:{'center_x': 0.5, 'center_y': 0.85}
         size_hint_x:None
@@ -568,11 +558,11 @@ ScreenManager:
         id: end_time_registration
         hint_text:'enter end time for registration'
         on_text_validate:start_time_voting.focus = True
-        helper_text:'year, month, date'
+        helper_text:'2021-01-25'
         helper_text_mode: 'on_focus'
-        icon_right:"android"
+        icon_right:"clock"
         icon_right_color: app.theme_cls.primary_color
-        pos_hint:{'center_x': 0.5, 'center_y': 0.7}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.75}
         size_hint_x:None
         width:280
 
@@ -580,28 +570,39 @@ ScreenManager:
         id: start_time_voting
         hint_text:'enter start time for voting'
         on_text_validate:end_time_voting.focus = True
-        helper_text:'year, month, date'
+        helper_text:'2021-01-25'
         helper_text_mode: 'on_focus'
-        icon_right:"android"
+        icon_right:"clock"
         icon_right_color: app.theme_cls.primary_color
-        pos_hint:{'center_x': 0.5, 'center_y': 0.55}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.65}
         size_hint_x:None
         width:280
         
     MDTextField:
         id: end_time_voting
         hint_text:'enter end time for voting'
-        helper_text:'year, month, date'
+        helper_text:'2021-01-25'
         helper_text_mode: 'on_focus'
-        icon_right:"android"
+        icon_right:"clock"
         icon_right_color: app.theme_cls.primary_color
-        pos_hint:{'center_x': 0.5, 'center_y': 0.4}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.55}
+        size_hint_x:None
+        width:280
+        
+    MDTextField:
+        id: start_result
+        hint_text:'enter start time for Result'
+        helper_text:'2021-01-25'
+        helper_text_mode: 'on_focus'
+        icon_right:"clock"
+        icon_right_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.5, 'center_y': 0.45}
         size_hint_x:None
         width:280
 
     MDRectangleFlatButton:
         text:'Submit'
-        pos_hint:{'center_x': 0.5, 'center_y': 0.25}
+        pos_hint:{'center_x': 0.5, 'center_y': 0.3}
         on_press:app.save_time() 
             
     MDBottomAppBar:
@@ -778,6 +779,11 @@ ScreenManager:
         height : self.texture_size[1]
         padding_y : 15   
         
+    MDRectangleFlatButton:
+        text:'Detailed Report'
+        pos_hint:{'center_x': 0.5, 'center_y': 0.15}
+        on_press:app.create_pdf('DetailedReport.pdf')
+        
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -787,6 +793,8 @@ ScreenManager:
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
             icon: 'language-python'
+            
+            
      
 
 

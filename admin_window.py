@@ -1,10 +1,12 @@
 import csv
+import datetime
 import json
 import os
 
 import cv2
 import pyrebase
 import requests
+from fpdf import FPDF
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.uix.image import Image
@@ -92,6 +94,33 @@ class FileNotFoundErrors(Exception):
     pass
 
 
+class CustomPDF(FPDF):
+
+    def header(self):
+        # Set up a logo
+        self.image('sskenterprise.jpg', 10, 20, 40)
+        self.set_font('Arial', 'B', 15)
+
+        # Add an address
+        self.cell(100)
+        self.cell(0, 5, 'Electronic Voting System', ln=1)
+        self.cell(100)
+        self.cell(0, 5, 'City: Karachi', ln=1)
+        self.cell(100)
+
+        # Line break
+        self.ln(60)
+
+    def footer(self):
+        self.set_y(-10)
+
+        self.set_font('Arial', 'I', 8)
+
+        # Add a page number
+        page = 'Page ' + str(self.page_no()) + '/{nb}'
+        self.cell(0, 10, page, 0, 0, 'C')
+
+
 class AdminAccess(MDApp):
     def __init__(self):
         super().__init__()
@@ -109,7 +138,7 @@ class AdminAccess(MDApp):
         self.theme_cls.primary_palette = 'Amber'
         Clock.schedule_once(self.forTowns)
         Clock.schedule_once(self.forParty)
-        Clock.schedule_once(self.forSector)
+        # Clock.schedule_once(self.forSector)
         self.db = firestore.client()
         try:
             firebaseconfig = {
@@ -202,27 +231,27 @@ class AdminAccess(MDApp):
     def drop_down_party(self, instance):
         self.screen.get_screen('Add_Candidate').ids.party_name.text = instance.text
 
-    def forSector(self, *args):
-        menu_items_sector = [
-            {"text": "NA-240"},
-            {"text": "NA-241"},
-            {"text": "NA-242"},
-            {"text": "NA-243"},
-            {"text": "NA-244"},
-            {"text": "NA-245"},
-        ]
-        self.menu_sector = MDDropdownMenu(
-            items=menu_items_sector,
-            caller=self.screen.get_screen('Add_Candidate').ids.sector,
-            position="auto",
-            width_mult=4,
-            callback=self.drop_down_sector
-
-        )
-        self.menu_sector.bind(on_release=self.drop_down_sector)
-
-    def drop_down_sector(self, instance):
-        self.screen.get_screen('Add_Candidate').ids.sector.text = instance.text
+    # def forSector(self, *args):
+    #     menu_items_sector = [
+    #         {"text": "NA-240"},
+    #         {"text": "NA-241"},
+    #         {"text": "NA-242"},
+    #         {"text": "NA-243"},
+    #         {"text": "NA-244"},
+    #         {"text": "NA-245"},
+    #     ]
+    #     self.menu_sector = MDDropdownMenu(
+    #         items=menu_items_sector,
+    #         caller=self.screen.get_screen('Add_Candidate').ids.sector,
+    #         position="auto",
+    #         width_mult=4,
+    #         callback=self.drop_down_sector
+    #
+    #     )
+    #     self.menu_sector.bind(on_release=self.drop_down_sector)
+    #
+    # def drop_down_sector(self, instance):
+    #     self.screen.get_screen('Add_Candidate').ids.sector.text = instance.text
 
     def admin_login(self):
         self.adminID = self.screen.get_screen('Login').ids.adminID.text
@@ -276,10 +305,9 @@ class AdminAccess(MDApp):
         self.partyName = self.screen.get_screen('Add_Candidate').ids.party_name.text
         self.CNIC = self.screen.get_screen('Add_Candidate').ids.cnic.text
         self.town = self.screen.get_screen('Add_Candidate').ids.town.text
-        self.sector = self.screen.get_screen('Add_Candidate').ids.sector.text
-
+        self.sector = ''
         if self.candidateName.split() == [] or self.partyName.split() == [] \
-                or self.CNIC.split() == [] or self.town.split() == [] or self.sector.split() == []:
+                or self.CNIC.split() == [] or self.town.split() == []:
             cancel_btn_username_dialogue = MDFlatButton(text='Retry', on_release=self.close_username_dialog)
             self.dialog = MDDialog(title='Invalid Input', text='Please Enter a valid Input', size_hint=(0.7, 0.2),
                                    buttons=[cancel_btn_username_dialogue])
@@ -354,13 +382,6 @@ class AdminAccess(MDApp):
                     'Number of Votes': 0
                 }
                 self.db.collection('Candidates').document(self.CNIC).set(data2)
-                # self.db.collection('SeatNumber').document(self.sector).collection(self.CNIC).set(
-                #     {
-                #         'Candidate Name': self.candidateName,
-                #         'Party Name': self.partyName,
-                #         'CNIC': self.CNIC,
-                #     }
-                # )
 
                 MDApp.get_running_app().root.current = 'Menu'
 
@@ -376,9 +397,10 @@ class AdminAccess(MDApp):
         self.end_reg = self.screen.get_screen('clock').ids.end_time_registration.text
         self.start_voting = self.screen.get_screen('clock').ids.start_time_voting.text
         self.end_voting = self.screen.get_screen('clock').ids.end_time_voting.text
+        self.start_result = self.screen.get_screen('clock').ids.start_result.text
 
         if self.start_reg.split() == [] or self.end_reg.split() == [] \
-                or self.start_voting.split() == [] or self.end_voting.split() == []:
+                or self.start_voting.split() == [] or self.end_voting.split() == [] or self.start_result.split() == []:
             cancel_btn_username_dialogue = MDFlatButton(text='Retry', on_release=self.close_username_dialog)
             self.dialog = MDDialog(title='Invalid Input', text='Please Enter a valid Input', size_hint=(0.7, 0.2),
                                    buttons=[cancel_btn_username_dialogue])
@@ -393,6 +415,7 @@ class AdminAccess(MDApp):
                     'EndDate Registration': self.end_reg,
                     'StartDate Voting': self.start_voting,
                     'EndDate Voting': self.end_voting,
+                    'Start Result': self.start_result,
                 }
                 self.db.collection('Time').document('Time').set(time)
                 MDApp.get_running_app().root.current = 'Menu'
@@ -418,7 +441,7 @@ class AdminAccess(MDApp):
             self.data_list_voters.append(data)
             i += 1
 
-        self.data_tables = MDDataTable(
+        self.data_tables_votes = MDDataTable(
             size_hint=(0.9, 0.6),
             use_pagination=True,
             # orientation="lr-tb",
@@ -437,7 +460,7 @@ class AdminAccess(MDApp):
             ],
             row_data=self.data_list_voters
         )
-        self.screen.get_screen('Vote').ids.anchor_layout.add_widget(self.data_tables)
+        self.screen.get_screen('Vote').ids.anchor_layout.add_widget(self.data_tables_votes)
 
     def voter_excel(self):
         data = ["S.No", "Name", "CNIC", "Mobile Number", "Email ID", "House Number", "Town",
@@ -464,54 +487,49 @@ class AdminAccess(MDApp):
                 toast("Excel Sheet Created")
 
     def show_candidate(self):
-
+        self.data_list_can = []
         doc_ref = self.db.collection('Candidates').get()
         i = 1
         for docs in doc_ref:
-            if len(doc_ref) == 0:
-                self.screen.get_screen('display_candidate').ids.vote_label.text = 'Welcome to Candidate table'
             a = docs.to_dict()
             data = [i, a['Candidate Name'], a['CNIC'], a['PartyName'], a['Sector'], a['Town'],
                     a['Number of Votes'], ]
-            self.data_list.append(data)
+            self.data_list_can.append(data)
             i += 1
-        print(self.data_list)
-        self.data_tables = MDDataTable(
+        print(self.data_list_can)
+        self.data_tables_can = MDDataTable(
             size_hint=(0.9, 0.6),
             use_pagination=True,
             # orientation="lr-tb",
             column_data=[
                 ("S.No", dp(20)),
-                ("Candidate Name", dp(30)),
+                ("Candidate Name", dp(35)),
                 ("CNIC", dp(30)),
                 ("Party Name", dp(25)),
                 ("Sector", dp(20)),
-                ("Town", dp(30)),
+                ("Town", dp(40)),
                 ("Number of Votes", dp(30)),
             ],
-            row_data=self.data_list
+            row_data=self.data_list_can
         )
 
-        # excel_button = MDRectangleFlatButton(
-        #     on_press=self.candidate_excel,
-        #     text='Show Excel'
-        # )
-        self.screen.get_screen('display_candidate').ids.anchor_layout.add_widget(self.data_tables)
+        self.screen.get_screen('display_candidate').ids.anchor_layout.add_widget(self.data_tables_can)
         # self.screen.get_screen('display_candidate').ids.anchor_layout.add_widget(excel_button)
 
     def on_enter(self):
-        self.data_tables.open()
+        self.data_tables_votes.open()
+        self.data_tables_can.open()
 
     def candidate_excel(self):
         data = ["S.No", "Candidate Name", "CNIC", "Party Name", "Sector", "Town", "Number of Votes"]
-        self.data_list.insert(0, data)
+        self.data_list_can.insert(0, data)
         if (not os.path.isfile(
                 "EVSystemCandidates.csv")):  # checks if Bike_List_With_Service.csv is in path
             with open("EVSystemCandidates.csv", 'w',
                       newline='') as file:  # creates a new csv file named 'Bikelistwithservice.csv'
                 a = csv.writer(file)
                 a.writerow(['Updated by: ' + self.adminID])
-                a.writerows(self.data_list)  # write each line of data
+                a.writerows(self.data_list_can)  # write each line of data
                 toast("Excel Sheet Created")
         else:
             file_to_be_overwrite = "EVSystemCandidates.csv"
@@ -522,7 +540,7 @@ class AdminAccess(MDApp):
                       newline='') as file:  # creates a new csv file named 'Bikelistwithservice.csv'
                 a = csv.writer(file)
                 a.writerow(['Updated by: ' + self.adminID])
-                a.writerows(self.data_list)  # write each line of data
+                a.writerows(self.data_list_can)  # write each line of data
                 toast("Excel Sheet Created")
 
     def profile(self):
@@ -666,68 +684,104 @@ class AdminAccess(MDApp):
             Ids.append(Id)
         return np.array(Ids), faceSamples
 
+    def set_time_result(self):
+        doc_ref = self.db.collection('Time').document('Time')
+        docs = doc_ref.get()
+        startDate = ''
+        if docs.exists:
+            a = docs.to_dict()
+            startDate = a['Start Result']
+
+        year = int(startDate[0:4])
+        month = int(startDate[5:7])
+        sdate = int(startDate[8:10])
+
+        if datetime.date.today() >= datetime.date(year, month, int(sdate)):
+            self.vote_result()
+        else:
+            cancel_btn_username_dialogue = MDFlatButton(text='Retry', on_release=self.close_username_dialog)
+            self.dialog = MDDialog(title='Time Error', text='Result is not started yet. It will'
+                                                            ' be available after ' + startDate,
+                                   size_hint=(0.7, 0.2),
+                                   buttons=[cancel_btn_username_dialogue])
+            self.dialog.open()
+            MDApp.get_running_app().root.current = 'voting_result'
+            return
+
     def vote_result(self):
-        global vote_summary
+
         MDApp.get_running_app().root.current = 'voting_result'
         candidates_info = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-240').get()
-        NA_240 = []
+        totalcan_240 = []
         for doc in candidates_info:
             dic = doc.to_dict()
-            self.NA_240 = dic['Number of Votes']
-            NA_240.append(self.NA_240)
-        print(NA_240)
-        data = sum(int(i) for i in NA_240)
-        print(data)
+            # self.NA_240 = dic['Number of Votes']
+            name = dic['PartyName']
+            totalcan_240.append(name)
+            # NA_240.append(self.NA_240)
+        print(sorted(totalcan_240))
+        # data = sum(int(i) for i in NA_240)
+        # print(data)
 
         candidates_info1 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-241').get()
-        NA_241 = []
+        totalcan_241 = []
         for doc in candidates_info1:
             dic = doc.to_dict()
-            self.NA_241 = dic['Number of Votes']
-            NA_241.append(self.NA_241)
-        print(NA_241)
-        data1 = sum(int(i) for i in NA_241)
-        print(data1)
+            # self.NA_241 = dic['Number of Votes']
+            name = dic['PartyName']
+            totalcan_241.append(name)
+            # NA_241.append(self.NA_241)
+        print(sorted(totalcan_241))
+        # data1 = sum(int(i) for i in NA_241)
+        # print(data1)
 
         candidates_info2 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-242').get()
-        NA_242 = []
+        totalcan_242 = []
         for doc in candidates_info2:
             dic = doc.to_dict()
-            self.NA_242 = dic['Number of Votes']
-            NA_242.append(self.NA_242)
-        print(NA_242)
-        data2 = sum(int(i) for i in NA_242)
-        print(data2)
+            # self.NA_242 = dic['Number of Votes']
+            name = dic['PartyName']
+            totalcan_242.append(name)
+            # NA_242.append(self.NA_242)
+        print(sorted(totalcan_242))
+        # data2 = sum(int(i) for i in NA_242)
+        # print(data2)
 
         candidates_info3 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-243').get()
-        NA_243 = []
+        totalcan_243 = []
         for doc in candidates_info3:
             dic = doc.to_dict()
-            self.NA_243 = dic['Number of Votes']
-            NA_243.append(self.NA_243)
-        print(NA_243)
-        data3 = sum(int(i) for i in NA_243)
-        print(data3)
+            # self.NA_243 = dic['Number of Votes']
+            name = dic['PartyName']
+            totalcan_243.append(name)
+            # NA_243.append(self.NA_243)
+        print(sorted(totalcan_243))
+        # data3 = sum(int(i) for i in NA_243)
+        # print(data3)
 
         candidates_info4 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-244').get()
-        NA_244 = []
+        totalcan_244 = []
         for doc in candidates_info4:
             dic = doc.to_dict()
-            self.NA_244 = dic['Number of Votes']
-            NA_244.append(self.NA_244)
-        print(NA_244)
-        data4 = sum(int(i) for i in NA_244)
-        print(data4)
+            # self.NA_244 = dic['Number of Votes']
+            name = dic['PartyName']
+            totalcan_244.append(name)
+            # NA_244.append(self.NA_244)
+        print(sorted(totalcan_244))
+        # data4 = sum(int(i) for i in NA_244)
+        # print(data4)
 
         candidates_info5 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-245').get()
-        NA_245 = []
+        totalcan_245 = []
         for doc in candidates_info5:
             dic = doc.to_dict()
-            self.NA_245 = dic['Number of Votes']
-            NA_245.append(self.NA_245)
-        print(NA_245)
-        data5 = sum(int(i) for i in NA_245)
-        print(data5)
+            # self.NA_245 = dic['Number of Votes']
+            name = dic['PartyName']
+            totalcan_245.append(name)
+            # NA_245.append(self.NA_245)
+        print(sorted(totalcan_245))
+        # data5 = sum(int(i) for i in NA_245)
+        # print(data5)
 
         party_infoA = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party A').get()
         votesA = []
@@ -810,20 +864,97 @@ class AdminAccess(MDApp):
         print('total vote cast', total_vote_cast)
         l = []
         partywon = {
-            'PartyA': total_voteA,
-            'PartyB': total_voteB,
-            'PartyC': total_voteC,
-            'PartyD': total_voteD,
-            'PartyE': total_voteE,
-            'PartyF': total_voteF,
+            'Party A': total_voteA,
+            'Party B': total_voteB,
+            'Party C': total_voteC,
+            'Party D': total_voteD,
+            'Party E': total_voteE,
+            'Party F': total_voteF,
 
         }
         list = sorted(partywon.items(), reverse=True, key=lambda x: x[1])
         won = list[0][0]
+        won_votes = list[0][1]
         print(won)
         # Iterate over the sorted sequence
         for elem in list:
             print(elem[0], " :", elem[1])
+
+        total_can = self.db.collection('Candidates').get()
+        totalCandiates = len(total_can)
+        print('total can', totalCandiates)
+
+        total_voters_240 = self.db.collection('Voters').where(u'Flag', u'==', 1).where(u'Sector', u'==', 'NA-240').get()
+        total_voters_240 = len(total_voters_240)
+        print('total voters in NA-240', total_voters_240)
+
+        total_voters_241 = self.db.collection('Voters').where(u'Flag', u'==', 1).where(u'Sector', u'==', 'NA-241').get()
+        total_voters_241 = len(total_voters_241)
+        print('total voters in NA-241', total_voters_241)
+
+        total_voters_242 = self.db.collection('Voters').where(u'Flag', u'==', 1).where(u'Sector', u'==', 'NA-242').get()
+        total_voters_242 = len(total_voters_242)
+        print('total voters in NA-242', total_voters_242)
+
+        total_voters_243 = self.db.collection('Voters').where(u'Flag', u'==', 1).where(u'Sector', u'==', 'NA-243').get()
+        total_voters_243 = len(total_voters_243)
+        print('total voters in NA-243', total_voters_243)
+
+        total_voters_244 = self.db.collection('Voters').where(u'Flag', u'==', 1).where(u'Sector', u'==', 'NA-244').get()
+        total_voters_244 = len(total_voters_244)
+        print('total voters in NA-244', total_voters_244)
+
+        total_voters_245 = self.db.collection('Voters').where(u'Flag', u'==', 1).where(u'Sector', u'==', 'NA-245').get()
+        total_voters_245 = len(total_voters_245)
+        print('total voters in NA-245', total_voters_245)
+
+        total_voters_reg_240 = self.db.collection('Voters').where(u'Sector', u'==', 'NA-240').get()
+        total_voters_reg_240 = len(total_voters_reg_240)
+        print('total voters reg in NA-240', total_voters_reg_240)
+
+        total_voters_reg_241 = self.db.collection('Voters').where(u'Sector', u'==', 'NA-241').get()
+        total_voters_reg_241 = len(total_voters_reg_241)
+        print('total voters reg in NA-241', total_voters_reg_241)
+
+        total_voters_reg_242 = self.db.collection('Voters').where(u'Sector', u'==', 'NA-242').get()
+        total_voters_reg_242 = len(total_voters_reg_242)
+        print('total voters reg in NA-242', total_voters_reg_242)
+
+        total_voters_reg_243 = self.db.collection('Voters').where(u'Sector', u'==', 'NA-243').get()
+        total_voters_reg_243 = len(total_voters_reg_243)
+        print('total voters reg in NA-243', total_voters_reg_243)
+
+        total_voters_reg_244 = self.db.collection('Voters').where(u'Sector', u'==', 'NA-244').get()
+        total_voters_reg_244 = len(total_voters_reg_244)
+        print('total voters reg in NA-244', total_voters_reg_244)
+
+        total_voters_reg_245 = self.db.collection('Voters').where(u'Sector', u'==', 'NA-245').get()
+        total_voters_reg_245 = len(total_voters_reg_245)
+        print('total voters reg in NA-245', total_voters_reg_245)
+
+        total_can_reg_240 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-240').get()
+        total_can_reg_240 = len(total_can_reg_240)
+        print('total can reg in NA-240', total_can_reg_240)
+
+        total_can_reg_241 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-241').get()
+        total_can_reg_241 = len(total_can_reg_241)
+        print('total can reg in NA-242', total_can_reg_241)
+
+        total_can_reg_242 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-242').get()
+        total_can_reg_242 = len(total_can_reg_242)
+        print('total can reg in NA-242', total_can_reg_242)
+
+        total_can_reg_243 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-243').get()
+        total_can_reg_243 = len(total_can_reg_243)
+        print('total can reg in NA-243', total_can_reg_243)
+
+        total_can_reg_244 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-244').get()
+        total_can_reg_244 = len(total_can_reg_244)
+        print('total can reg in NA-244', total_can_reg_244)
+
+        total_can_reg_245 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-245').get()
+        total_can_reg_245 = len(total_can_reg_245)
+        print('total can reg in NA-245', total_can_reg_245)
 
         try:
 
@@ -832,18 +963,31 @@ class AdminAccess(MDApp):
                 'TotalVoterRegister': total_vote,
                 'TotalVoteCast': total_vote_cast,
                 'TotalPopulationNA240': 100,
-                'TotalVoteCastNA240': data,
+                'TotalVoteRegisterNA240': total_voters_reg_240,
+                'TotalVoteCastNA240': total_voters_240,
+                'TotalCandidatesRegisterNA240': total_can_reg_240,
                 'TotalPopulationNA241': 100,
-                'TotalVoteCastNA241': data1,
+                'TotalVoteRegisterNA241': total_voters_reg_241,
+                'TotalVoteCastNA241': total_voters_241,
+                'TotalCandidatesRegisterNA241': total_can_reg_241,
                 'TotalPopulationNA242': 200,
-                'TotalVoteCastNA242': data2,
+                'TotalVoteRegisterNA242': total_voters_reg_242,
+                'TotalVoteCastNA242': total_voters_242,
+                'TotalCandidatesRegisterNA242': total_can_reg_242,
                 'TotalPopulationNA243': 200,
-                'TotalVoteCastNA243': data3,
+                'TotalVoteRegisterNA243': total_voters_reg_243,
+                'TotalVoteCastNA243': total_voters_243,
+                'TotalCandidatesRegisterNA243': total_can_reg_243,
                 'TotalPopulationNA244': 200,
-                'TotalVoteCastNA244': data4,
+                'TotalVoteRegisterNA244': total_voters_reg_244,
+                'TotalVoteCastNA244': total_voters_244,
+                'TotalCandidatesRegisterNA244': total_can_reg_244,
                 'TotalPopulationNA245': 200,
-                'TotalVoteCastNA245': data5,
+                'TotalVoteRegisterNA245': total_voters_reg_245,
+                'TotalVoteCastNA245': total_voters_245,
+                'TotalCandidatesRegisterNA245': total_can_reg_245,
                 'TotalParties': 6,
+                'TotalCandidates': totalCandiates,
                 'TotalIndependentCandidates': total_ind,
                 'TotalVotesPartyA': total_voteA,
                 'TotalVotesPartyB': total_voteB,
@@ -851,7 +995,8 @@ class AdminAccess(MDApp):
                 'TotalVotesPartyD': total_voteD,
                 'TotalVotesPartyE': total_voteE,
                 'TotalVotesPartyF': total_voteF,
-                'Party Won': won
+                'Party Won': won,
+                'WonPartyVotes': won_votes
 
             }
             self.db.collection('VoterSummary').document('Karachi').set(data2)
@@ -868,15 +1013,153 @@ class AdminAccess(MDApp):
         doc_ref = self.db.collection('VoterSummary').document('Karachi')
         docs = doc_ref.get()
         if docs.exists:
-            vote_summary = docs.to_dict()
+            self.vote_summary = docs.to_dict()
 
-        self.screen.get_screen('voting_result').ids.total_population.text = str(vote_summary['TotalPopulation'])
-        self.screen.get_screen('voting_result').ids.vote_reg.text = str(vote_summary['TotalVoterRegister'])
-        self.screen.get_screen('voting_result').ids.vote_cast.text = str(vote_summary['TotalVoteCast'])
+        self.screen.get_screen('voting_result').ids.total_population.text = str(self.vote_summary['TotalPopulation'])
+        self.screen.get_screen('voting_result').ids.vote_reg.text = str(self.vote_summary['TotalVoterRegister'])
+        self.screen.get_screen('voting_result').ids.vote_cast.text = str(self.vote_summary['TotalVoteCast'])
         self.screen.get_screen('voting_result').ids.no_of_parties.text = str(6)
-        self.screen.get_screen('voting_result').ids.no_of_ind.text = str(vote_summary['TotalIndependentCandidates'])
-        self.screen.get_screen('voting_result').ids.party_won.text = str(vote_summary['Party Won']) + '  won by  ' + \
-                                                                     str(list[0][1]) + '  votes'
+        self.screen.get_screen('voting_result').ids.no_of_ind.text = str(
+            self.vote_summary['TotalIndependentCandidates'])
+        self.screen.get_screen('voting_result').ids.party_won.text = str(
+            self.vote_summary['Party Won']) + '  won by  ' + str(self.vote_summary['WonPartyVotes']) + '  votes'
+
+    def create_pdf(self, pdf_path):
+        pdf = CustomPDF()
+        # Create the special value {nb}
+        pdf.alias_nb_pages()
+        pdf.add_page()
+        pdf.set_font('Times', '', 12)
+        pdf.cell(0, 5, 'General Information:', ln=1)
+        pdf.ln(10)
+        data_gen = [['Total Population', str(self.vote_summary['TotalPopulation'])],
+                    ['Total Voter Registered', str(self.vote_summary['TotalVoterRegister'])],
+                    ['Total Vote Casted', str(self.vote_summary['TotalVoteCast'])],
+                    ['Number of Parties', str(6)],
+                    ['Total Seats', str(6)],
+                    ['Number of Candidates', str(self.vote_summary['TotalCandidates'])],
+                    ['Number of Independent Candidates', str(self.vote_summary['TotalIndependentCandidates'])],
+                    ['Total Votes of Party A', str(self.vote_summary['TotalVotesPartyA'])],
+                    ['Total Votes of Party B', str(self.vote_summary['TotalVotesPartyB'])],
+                    ['Total Votes of Party C', str(self.vote_summary['TotalVotesPartyC'])],
+                    ['Total Votes of Party D', str(self.vote_summary['TotalVotesPartyD'])],
+                    ['Total Votes of Party E', str(self.vote_summary['TotalVotesPartyE'])],
+                    ['Total Votes of Party F', str(self.vote_summary['TotalVotesPartyF'])],
+                    ['Party Won', str(self.vote_summary['Party Won']) + '  won by  ' +
+                     str(self.vote_summary['WonPartyVotes']) + '  votes'],
+                    ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data_gen:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.ln(20)
+        pdf.cell(0, 5, 'NA-240:', ln=1)
+        pdf.ln(10)
+        data = [['Total Population', str(self.vote_summary['TotalPopulationNA240'])],
+                ['Total Voter Registered', str(self.vote_summary['TotalVoteRegisterNA240'])],
+                ['Total Vote Casted', str(self.vote_summary['TotalVoteCastNA240'])],
+                ['Number of Candidates', str(self.vote_summary['TotalCandidatesRegisterNA240'])],
+                ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.ln(20)
+        pdf.cell(0, 5, 'NA-241:', ln=1)
+        pdf.ln(10)
+        data1 = [['Total Population', str(self.vote_summary['TotalPopulationNA241'])],
+                 ['Total Voter Registered', str(self.vote_summary['TotalVoteRegisterNA241'])],
+                 ['Total Vote Casted', str(self.vote_summary['TotalVoteCastNA241'])],
+                 ['Number of Candidates', str(self.vote_summary['TotalCandidatesRegisterNA241'])],
+                 ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data1:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.ln(20)
+        pdf.cell(0, 5, 'NA-242:', ln=1)
+        pdf.ln(10)
+        data2 = [['Total Population', str(self.vote_summary['TotalPopulationNA242'])],
+                 ['Total Voter Registered', str(self.vote_summary['TotalVoteRegisterNA242'])],
+                 ['Total Vote Casted', str(self.vote_summary['TotalVoteCastNA242'])],
+                 ['Number of Candidates', str(self.vote_summary['TotalCandidatesRegisterNA242'])],
+                 ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data2:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.ln(20)
+        pdf.cell(0, 5, 'NA-243:', ln=1)
+        pdf.ln(10)
+        data3 = [['Total Population', str(self.vote_summary['TotalPopulationNA243'])],
+                 ['Total Voter Registered', str(self.vote_summary['TotalVoteRegisterNA243'])],
+                 ['Total Vote Casted', str(self.vote_summary['TotalVoteCastNA243'])],
+                 ['Number of Candidates', str(self.vote_summary['TotalCandidatesRegisterNA243'])],
+                 ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data3:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.ln(20)
+        pdf.cell(0, 5, 'NA-244:', ln=1)
+        pdf.ln(10)
+        data4 = [['Total Population', str(self.vote_summary['TotalPopulationNA244'])],
+                 ['Total Voter Registered', str(self.vote_summary['TotalVoteRegisterNA244'])],
+                 ['Total Vote Casted', str(self.vote_summary['TotalVoteCastNA244'])],
+                 ['Number of Candidates', str(self.vote_summary['TotalCandidatesRegisterNA244'])],
+                 ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data4:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.ln(20)
+        pdf.cell(0, 5, 'NA-245:', ln=1)
+        pdf.ln(10)
+        data5 = [['Total Population', str(self.vote_summary['TotalPopulationNA245'])],
+                 ['Total Voter Registered', str(self.vote_summary['TotalVoteRegisterNA245'])],
+                 ['Total Vote Casted', str(self.vote_summary['TotalVoteCastNA245'])],
+                 ['Number of Candidates', str(self.vote_summary['TotalCandidatesRegisterNA245'])],
+                 ]
+
+        col_width = pdf.w / 4.5
+        row_height = pdf.font_size
+        for row in data5:
+            for item in row:
+                pdf.cell(col_width * 2, row_height * 2,
+                         txt=item, border=1)
+            pdf.ln(row_height * 2)
+
+        pdf.output(pdf_path)
 
 
 AdminAccess().run()
