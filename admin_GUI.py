@@ -2,7 +2,6 @@ screen_helper = '''
 #:import CardTransition kivy.uix.screenmanager.CardTransition
 #:import FallOutTransition kivy.uix.screenmanager.FallOutTransition
 #:import NoTransition kivy.uix.screenmanager.NoTransition
-
 ScreenManager:
     LogoScreen
     LoginScreen:
@@ -15,14 +14,13 @@ ScreenManager:
     AddCandidateScreen:
     Timer:
     VotingResult:
-
+    # Email:
 <LogoScreen>
     name :'logoscreen'
     size : 1000,900
     Image:
         source: 'sskenterprise.jpg'
         size: self.texture_size
-
 <LoginScreen>:
     name:'Login'
     MDLabel :
@@ -48,7 +46,7 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.65}
         size_hint_x:None
         width:280
-        
+
     MDTextField:
         id: password
         hint_text:'enter password'
@@ -61,7 +59,6 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.5}
         size_hint_x:None
         width:280
-
     MDRectangleFlatButton:
         text:'Continue'
         pos_hint:{'center_x': 0.5, 'center_y': 0.33}
@@ -69,10 +66,10 @@ ScreenManager:
         on_press:
             app. admin_login()
             app.root.transition = CardTransition(direction='left',mode='pop') 
-    
+
 <MenuScreen>:
     name:'Menu'
-    
+
     MDCard:
         size_hint:(None,None)
         width:120
@@ -90,7 +87,6 @@ ScreenManager:
             on_press:
                 app.root.transition = CardTransition(direction='down',mode='pop') 
                 root.manager.current = 'Candidate'
-
     MDCard:
         size_hint:(None,None)
         width:120
@@ -110,8 +106,6 @@ ScreenManager:
                 root.manager.current = 'display_candidate'
                 app.show_candidate()
 
-    
-
     MDCard:
         size_hint:(None,None)
         width:120
@@ -130,9 +124,7 @@ ScreenManager:
                 app.root.transition = CardTransition(direction='right',mode='pop')  
                 root.manager.current = 'Profile'
                 app.profile()
-                
 
-    
 
     MDCard:
         size_hint:(None,None)
@@ -152,7 +144,6 @@ ScreenManager:
                 app.root.transition = CardTransition(direction='left',mode='pop')  
                 root.manager.current = 'Vote'
                 app.show_voter()
-
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -162,7 +153,7 @@ ScreenManager:
                 app.root.transition = NoTransition()
                 root.manager.current = 'clock'
             icon: 'clock'
-            
+
     MDRectangleFlatIconButton:
         text:'Logout'
         # size_hint:(0.8, 0.09)
@@ -173,8 +164,6 @@ ScreenManager:
             # app.stop()
             app.logout_admin()
 
-    
-
 <ProfileScreen>:
     name:'Profile'
     BoxLayout:
@@ -184,18 +173,18 @@ ScreenManager:
         size_hint_y: None  # Tells the layout to ignore the size_hint in y dir
         height: dp(200)
         pos_hint: {"center_x":.2,"center_y":.65}
-        
+
     MDLabel :
         text : 'Profile Window '
         font_style : 'Button'
         font_size : 40
         halign : "center"
-        
+
         pos_hint : {"center_x":.5,"center_y":.96}
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-    
+
     MDLabel :
         text : 'Name: '
         font_style : 'Button'
@@ -207,7 +196,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-    
+
     MDLabel :
         text : 'Email: '
         font_style : 'Button'
@@ -219,7 +208,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         text : 'Password: '
         font_style : 'Button'
@@ -231,7 +220,7 @@ ScreenManager:
         text_color: app.theme_cls.primary_color
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         text : 'Mobile Number:'
         font_style : 'Button'
@@ -243,7 +232,7 @@ ScreenManager:
         theme_text_color: "Custom"
         text_color: app.theme_cls.primary_color
         padding_y : 15
-        
+
     MDLabel :
         text : 'AdminID: '
         font_style : 'Button'
@@ -255,7 +244,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         id: name
         # text : 'Name: '
@@ -268,7 +257,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-    
+
     MDLabel :
         id: email
         # text : 'Email: '
@@ -281,7 +270,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-         
+
     MDLabel :
         id: password
         # text : 'Password: '
@@ -296,7 +285,7 @@ ScreenManager:
         text_color: app.theme_cls.primary_color
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         id: mobileNumber
         # text : 'Mobile Number:'
@@ -309,7 +298,7 @@ ScreenManager:
         theme_text_color: "Custom"
         text_color: app.theme_cls.primary_color
         padding_y : 15
-        
+
     MDLabel :
         id: adminId
         # text : 'AdminID: '
@@ -322,7 +311,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDRectangleFlatButton:
         id: viewAdmins
         text:'View Admins'
@@ -334,7 +323,7 @@ ScreenManager:
             root.manager.current = 'showAdmin'
             app. show_admin()
             app.root.transition = CardTransition(direction='left',mode='pop') 
-    
+
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -344,17 +333,16 @@ ScreenManager:
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
             icon: 'language-python'
-
 <ShowAdmin>
     name: 'showAdmin'  
-    
+
     ScrollView:               
-        
+
         MDList:
             spacing: '25dp'
             padding: '45dp' 
             id: scroll
-    
+
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -365,12 +353,11 @@ ScreenManager:
                 root.manager.current = 'Profile'
             icon: 'language-python'
 
-                   
 <VoteScreen>:
     name:'Vote'
     AnchorLayout:
         id:anchor_layout
-        
+
     MDToolbar:
         title: 'SHOW VOTERS'
         type: 'top'
@@ -380,7 +367,6 @@ ScreenManager:
     # MDLabel:
     #     id: vote_label
     #     halign:'center'
-
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -389,9 +375,8 @@ ScreenManager:
             on_action_button: 
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
-                
-            icon: 'language-python'
 
+            icon: 'language-python'
 <DisplayCandidate>:
     name:'display_candidate'
     AnchorLayout:
@@ -399,15 +384,14 @@ ScreenManager:
     # MDLabel:
     #     id: candidate_label
     #     halign:'center'
-
     MDToolbar:
         title: 'ADD CANDIDATES'
         type: 'top'
         pos_hint: {"top": 1}
         right_action_items: [["account-plus", lambda x: app.nav_draw()],["plus", lambda x: app.candidate_excel()]]
         elevation:5
-    
-    
+
+
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -416,28 +400,26 @@ ScreenManager:
             on_action_button: 
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
-                
-            icon: 'language-python'
 
+            icon: 'language-python'
 <CandidateScreen>:
     name:'Candidate'
 
-    
-    
+
     MDRectangleFlatButton:
         text:'Download Images'
         font_size:25
         pos_hint:{'center_x': 0.5, 'center_y': 0.75}
         on_press:
             app.download_images()
-            
+
     MDRectangleFlatButton:
         text:'Training Images'
         font_size:25
         pos_hint:{'center_x': 0.5, 'center_y': 0.55}
         on_press:
             app.training_images()
-            
+
     MDRectangleFlatButton:
         text:'Vote Summary'
         font_size:25
@@ -445,8 +427,6 @@ ScreenManager:
         on_press:
             app.set_time_result()
 
-
-    
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -456,11 +436,9 @@ ScreenManager:
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
             icon: 'language-python'
-
-
 <AddCandidateScreen>:
     name:'Add_Candidate'
-    
+
     MDTextField:
         id : candidate_name
         hint_text: "Candidate Name"
@@ -472,7 +450,7 @@ ScreenManager:
         size_hint_x:None
         width:250
         pos_hint:{'center_x': 0.5, 'center_y': 0.8}
-        
+
     MDTextField:
         id : party_name
         hint_text: "Political Party Name"
@@ -485,7 +463,6 @@ ScreenManager:
         width:250
         pos_hint:{'center_x': 0.5, 'center_y': 0.7}
         on_focus: if self.focus: app.menu_party.open()
-
     MDTextField:
         id : cnic
         hint_text: "CNIC"
@@ -499,7 +476,6 @@ ScreenManager:
         size_hint_x:None
         width:250
         pos_hint:{'center_x': 0.5, 'center_y': 0.6}
-
     MDTextField:
         id : town
         hint_text: "Town"
@@ -512,7 +488,6 @@ ScreenManager:
         width:250
         pos_hint:{'center_x': 0.5, 'center_y': 0.5}
         on_focus: if self.focus: app.menu.open()
-
     # MDTextField:
     #     id : sector
     #     hint_text: "Sector"
@@ -524,14 +499,14 @@ ScreenManager:
     #     width:250
     #     pos_hint:{'center_x': 0.5, 'center_y': 0.5}
     #     on_focus: if self.focus: app.menu_sector.open()
-        
+
     MDRectangleFlatButton:
         text:'SUBMIT'
         font_size:25
         pos_hint:{'center_x': 0.5, 'center_y': 0.35}
         on_press: app.submit()
-            
-            
+
+
     MDRectangleFlatButton:
         text:'BACK'
         font_size:25
@@ -539,7 +514,7 @@ ScreenManager:
         on_press: 
             app.root.transition = NoTransition()
             root.manager.current = 'display_candidate'      
-        
+
 <Timer>:
     name:'clock'
     MDTextField:
@@ -553,7 +528,7 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.85}
         size_hint_x:None
         width:280
-        
+
     MDTextField:
         id: end_time_registration
         hint_text:'enter end time for registration'
@@ -565,7 +540,6 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.75}
         size_hint_x:None
         width:280
-
     MDTextField:
         id: start_time_voting
         hint_text:'enter start time for voting'
@@ -577,7 +551,7 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.65}
         size_hint_x:None
         width:280
-        
+
     MDTextField:
         id: end_time_voting
         hint_text:'enter end time for voting'
@@ -588,7 +562,7 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.55}
         size_hint_x:None
         width:280
-        
+
     MDTextField:
         id: start_result
         hint_text:'enter start time for Result'
@@ -599,12 +573,11 @@ ScreenManager:
         pos_hint:{'center_x': 0.5, 'center_y': 0.45}
         size_hint_x:None
         width:280
-
     MDRectangleFlatButton:
         text:'Submit'
         pos_hint:{'center_x': 0.5, 'center_y': 0.3}
         on_press:app.save_time() 
-            
+
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -614,7 +587,7 @@ ScreenManager:
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
             icon: 'language-python'
-            
+
 <VotingResult>
     name:'voting_result'
     MDLabel :
@@ -622,7 +595,7 @@ ScreenManager:
         font_style : 'Button'
         font_size : 40
         halign : "center"
-        
+
         pos_hint : {"center_x":.5,"center_y":.96}
         size_hint_y : None
         height : self.texture_size[1]
@@ -638,7 +611,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-    
+
     MDLabel :
         text : 'Vote Registered: '
         font_style : 'Button'
@@ -650,7 +623,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         text : 'Total Number of Vote Cast: '
         font_style : 'Button'
@@ -662,7 +635,7 @@ ScreenManager:
         text_color: app.theme_cls.primary_color
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         text : 'Number of Parties:'
         font_style : 'Button'
@@ -674,7 +647,7 @@ ScreenManager:
         theme_text_color: "Custom"
         text_color: app.theme_cls.primary_color
         padding_y : 15
-        
+
     MDLabel :
         text : 'Number of Independent: '
         font_style : 'Button'
@@ -686,7 +659,7 @@ ScreenManager:
         theme_text_color: "Custom"
         text_color: app.theme_cls.primary_color
         padding_y : 15
-    
+
     MDLabel :
         text : 'Party won The Election: '
         font_style : 'Button'
@@ -698,7 +671,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15   
-        
+
     MDLabel :
         id: total_population
         # text : 'Name: '
@@ -711,7 +684,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-    
+
     MDLabel :
         id: vote_reg
         # text : 'Email: '
@@ -724,7 +697,7 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15
-         
+
     MDLabel :
         id: vote_cast
         # text : 'Password: '
@@ -739,7 +712,7 @@ ScreenManager:
         text_color: app.theme_cls.primary_color
         height : self.texture_size[1]
         padding_y : 15
-        
+
     MDLabel :
         id: no_of_parties
         # text : 'Mobile Number:'
@@ -752,7 +725,7 @@ ScreenManager:
         theme_text_color: "Custom"
         text_color: app.theme_cls.primary_color
         padding_y : 15
-        
+
     MDLabel :
         id: no_of_ind
         # text : 'Mobile Number:'
@@ -765,7 +738,7 @@ ScreenManager:
         theme_text_color: "Custom"
         text_color: app.theme_cls.primary_color
         padding_y : 15
-        
+
     MDLabel :
         id: party_won
         # text : 'AdminID: '
@@ -778,12 +751,19 @@ ScreenManager:
         size_hint_y : None
         height : self.texture_size[1]
         padding_y : 15   
+
+    # MDRectangleFlatButton:
+    #     text:'Add mailing address'
+    #     pos_hint:{'center_x': 0.5, 'center_y': 0.23}
+    #     on_press:root.manager.current = 'email'
+    #     
         
     MDRectangleFlatButton:
         text:'Detailed Report'
         pos_hint:{'center_x': 0.5, 'center_y': 0.15}
         on_press:app.create_pdf('DetailedReport.pdf')
-        
+
+
     MDBottomAppBar:
         MDToolbar:
             title:'SSK Enterprises'
@@ -793,9 +773,46 @@ ScreenManager:
                 app.root.transition = NoTransition()
                 root.manager.current = 'Menu'
             icon: 'language-python'
-            
-            
-     
 
 
+# <Email>:
+#     name:'email'
+#     MDLabel :
+#         text : 'Add New Email'
+#         font_style : 'Button'
+#         font_size : 50
+#         halign : "center"
+#         theme_text_color: "Custom"
+#         text_color: app.theme_cls.primary_color
+#         pos_hint : {"center_x":.5,"center_y":.9}
+#         size_hint_y : None
+#         height : self.texture_size[1]
+#         padding_y : 15
+#     
+#     MDTextField:
+#         id: emailID
+#         hint_text:'enter New Email'
+#         on_text_validate:password.focus = True
+#         required: True
+#         helper_text:'Required'
+#         helper_text_mode: 'on_error'
+#         icon_right:"account-box"
+#         icon_right_color: app.theme_cls.primary_color
+#         pos_hint:{'center_x': 0.5, 'center_y': 0.65}
+#         size_hint_x:None
+#         width:280
+# 
+#     MDRectangleFlatButton:
+#         text:'ENTER'
+#         pos_hint:{'center_x': 0.5, 'center_y': 0.45}
+#         on_press:app.add_new_mail()
+#         
+# 
+# 
+#     MDRectangleFlatButton:
+#         text:'BACK'
+#         pos_hint:{'center_x': 0.5, 'center_y': 0.25}
+#         on_press:root.manager.current = 'voting_result'
+# 
+# 
 '''
