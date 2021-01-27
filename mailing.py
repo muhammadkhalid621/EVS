@@ -14,7 +14,7 @@ Thank You
 
 #The mail addresses and password
 sender_address = 'sender@gmail.com'
-sender_pass = '*******************'
+sender_pass = '********************'
 receiver_address_list = ['user1@gmail.com' , 'user2@gmail.com' , 'user3@gmail.com'  , 'user4@gmail.com' ]
 
 
