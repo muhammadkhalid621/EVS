@@ -13,9 +13,9 @@ Thank You
 '''
 
 #The mail addresses and password
-sender_address = 'sskenterprises486@gmail.com'
-sender_pass = 'unimaginable_TRUE_3'
-receiver_address_list = ['shehryarmallick28@gmail.com' , 'saadchampsc@gmail.com' , 'muhammadkhalid621@gmail.com'  , 'umershahid667@gmail.com' ]
+sender_address = 'sender@gmail.com'
+sender_pass = '*******************'
+receiver_address_list = ['user1@gmail.com' , 'user2@gmail.com' , 'user3@gmail.com'  , 'user4@gmail.com' ]
 
 
 def add_mail(mail):
