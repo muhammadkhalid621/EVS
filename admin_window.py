@@ -72,6 +72,7 @@ class Timer(Screen):
 class VotingResult(Screen):
     pass
 
+
 # class Email(Screen):
 #     pass
 
@@ -87,6 +88,8 @@ sm.add_widget(LogoScreen(name='logoscreen'))
 sm.add_widget(AddCandidateScreen(name='Add_Candidate'))
 sm.add_widget(Timer(name='clock'))
 sm.add_widget(VotingResult(name='voting_result'))
+
+
 # sm.add_widget(Email(name='email'))
 
 
@@ -716,16 +719,22 @@ class AdminAccess(MDApp):
 
         MDApp.get_running_app().root.current = 'voting_result'
         candidates_info = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-240').get()
+        VoteA = {}
         totalcan_240 = []
         for doc in candidates_info:
             dic = doc.to_dict()
-            # self.NA_240 = dic['Number of Votes']
+
+            # VoteA.append(NA_240)
             name = dic['PartyName']
+            VoteA[name, dic['Candidate Name'], dic['CNIC']] = str(dic['Number of Votes'])
             totalcan_240.append(name)
             # NA_240.append(self.NA_240)
         print(sorted(totalcan_240))
         # data = sum(int(i) for i in NA_240)
-        # print(data)
+        print('240',  VoteA)
+        list = sorted(VoteA.items(), reverse=True, key=lambda x: x[1])
+        print(list[0][0][0], list[0][0][1], list[0][0][2], list[0][1])
+
 
         candidates_info1 = self.db.collection('Candidates').where(u'Sector', u'==', 'NA-241').get()
         totalcan_241 = []
@@ -788,60 +797,72 @@ class AdminAccess(MDApp):
         # print(data5)
 
         party_infoA = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party A').get()
+        VoteA = {}
         votesA = []
         for doc in party_infoA:
             dic = doc.to_dict()
             voteA = dic['Number of Votes']
+            VoteA[dic['Sector']] = voteA
             votesA.append(voteA)
         print(votesA)
         total_voteA = sum(int(i) for i in votesA)
         print(total_voteA)
 
         party_infoB = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party B').get()
+        VoteB = {}
         votesB = []
         for doc in party_infoB:
             dic = doc.to_dict()
             voteB = dic['Number of Votes']
+            VoteB[dic['Sector']] = voteB
             votesB.append(voteB)
         print(votesB)
         total_voteB = sum(int(i) for i in votesB)
         print(total_voteB)
 
         party_infoC = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party C').get()
+        VoteC = {}
         votesC = []
         for doc in party_infoC:
             dic = doc.to_dict()
             voteC = dic['Number of Votes']
+            VoteC[dic['Sector']] = voteC
             votesC.append(voteC)
         print(votesC)
         total_voteC = sum(int(i) for i in votesC)
         print(total_voteC)
 
         party_infoD = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party D').get()
+        VoteD = {}
         votesD = []
         for doc in party_infoD:
             dic = doc.to_dict()
             voteD = dic['Number of Votes']
+            VoteD[dic['Sector']] = voteD
             votesD.append(voteD)
         print(votesD)
         total_voteD = sum(int(i) for i in votesD)
         print(total_voteD)
 
         party_infoE = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party E').get()
+        VoteE = {}
         votesE = []
         for doc in party_infoE:
             dic = doc.to_dict()
             voteE = dic['Number of Votes']
+            VoteE[dic['Sector']] = voteE
             votesE.append(voteE)
         print(votesE)
         total_voteE = sum(int(i) for i in votesE)
         print(total_voteE)
 
         party_infoF = self.db.collection('Candidates').where(u'PartyName', u'==', 'Party F').get()
+        VoteF = {}
         votesF = []
         for doc in party_infoF:
             dic = doc.to_dict()
             voteF = dic['Number of Votes']
+            VoteF[dic['Sector']] = voteF
             votesF.append(voteF)
         print(votesF)
         total_voteF = sum(int(i) for i in votesF)
@@ -850,13 +871,23 @@ class AdminAccess(MDApp):
         party_infoInd = self.db.collection('Candidates').where(u'PartyName', u'==', 'Independent').get()
         total_ind = len(party_infoInd)
         print('total ind can', total_ind)
-        votesInd = []
+        VoteInd = {}
+        votesIND = []
         for doc in party_infoInd:
             dic = doc.to_dict()
             voteInd = dic['Number of Votes']
-            votesInd.append(voteInd)
-        print(votesInd)
-        total_voteInd = sum(int(i) for i in votesInd)
+            VoteInd[dic['Sector']] = voteInd
+            votesIND.append(voteInd)
+        print(votesF)
+        total_voteInd = sum(int(i) for i in votesIND)
+
+        print(VoteA)
+        print(VoteB)
+        print(VoteC)
+        print(VoteD)
+        print(VoteE)
+        print(VoteF)
+        print(VoteInd)
         print(total_voteInd)
 
         vote_reg = self.db.collection('Voters').get()
@@ -985,6 +1016,7 @@ class AdminAccess(MDApp):
                 'TotalPopulationNA244': 200,
                 'TotalVoteRegisterNA244': total_voters_reg_244,
                 'TotalVoteCastNA244': total_voters_244,
+
                 'TotalCandidatesRegisterNA244': total_can_reg_244,
                 'TotalPopulationNA245': 200,
                 'TotalVoteRegisterNA245': total_voters_reg_245,
@@ -1164,12 +1196,14 @@ class AdminAccess(MDApp):
             pdf.ln(row_height * 2)
 
         pdf.output(pdf_path)
+        admin_email = []
+        emails = self.db.collection('Admin').get()
+        for admin in emails:
+            email = admin.to_dict()
+            admin_email.append(email['Email'])
+            print(email['Email'])
+        print(admin_email)
+        send_mail(admin_email)
 
-        send_mail()
-
-    # def add_new_mail(self):
-    #     self.emailID = self.screen.get_screen('email').ids.emailID.text
-    #     add_mail(self.emailID)
-    #     MDApp.get_running_app().root.current = 'voting_result'
 
 AdminAccess().run()

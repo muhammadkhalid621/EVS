@@ -551,7 +551,7 @@ class SignUPApp(MDApp):
         for doc in candidates_info:
             dic = doc.to_dict()
             self.can_sector = dic['Sector']
-            b = dic['CNIC']
+            b = dic['Candidate Name']
             c = dic['PartyName']
             self.can_cnic.append(b)
             self.can_party.append(c)
@@ -559,7 +559,7 @@ class SignUPApp(MDApp):
         checkboxes = []
         for i in range(0, len(candidates_info)):
             self.list = ThreeLineAvatarIconListItem(text='Sector: ' + self.can_sector,
-                                                    secondary_text='CNIC: ' + self.can_cnic[i - 1],
+                                                    secondary_text='Candidate Name: ' + self.can_cnic[i - 1],
                                                     tertiary_text='Party Name: ' + self.can_party[i - 1],
                                                     )
             self.check_box = MDCheckbox(
