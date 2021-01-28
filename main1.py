@@ -1,9 +1,7 @@
 import json
 import datetime
 import random
-
 import requests.exceptions
-
 import pyrebase
 from google.cloud import storage
 from kivy import Config
@@ -76,6 +74,7 @@ def callbackfun(obj):
 
 
 class SignUPApp(MDApp):
+    dialog1: MDDialog
     dialog: MDDialog
 
     class ContentNavigationDrawer(BoxLayout):
@@ -434,6 +433,7 @@ class SignUPApp(MDApp):
 
         doc_ref = self.db.collection('Voters').document(self.loginCNIC)
         docs = doc_ref.get()
+
         if docs.exists:
             self.a = docs.to_dict()
             if self.a['Flag'] == 1:
@@ -443,9 +443,25 @@ class SignUPApp(MDApp):
                                        buttons=[cancel_btn_username_dialogue])
                 self.dialog.open()
                 return
-            Keys = self.a.keys()
+            # self.storage.child('Voter Images/')
+            imageList = []
+            a = self.bucket.list_blobs()
+            for i in a:
+                # print(i.name)
+                imageList.append(i.name)
 
-            MDApp.get_running_app().root.current = 'detection'
+            print(imageList)
+            self.imgPath = str(self.a['ImageID'])
+            if ('Voter Images/' + str(self.a['ImageID']) + '.jpg') in imageList:
+                MDApp.get_running_app().root.current = 'detection'
+
+            else:
+                cancel_btn_username_dialogue = MDFlatButton(text='Continue', on_release=self.face_detect)
+                self.dialog = MDDialog(title='Face has not Recognized', text='Click on the Continue Button for face recognition',
+                                       size_hint=(0.7, 0.2),
+                                       buttons=[cancel_btn_username_dialogue])
+                self.dialog.open()
+
 
 
         else:
@@ -511,7 +527,7 @@ class SignUPApp(MDApp):
             print('this is my flag:', flag)
             self.switch()
         elif flag == -1:
-            quit()
+            self.logout()
         else:
             pass
 
@@ -568,9 +584,9 @@ class SignUPApp(MDApp):
         )
         self.strng.get_screen('dashboard').ids.scroll.add_widget(submit_button)
 
-    @staticmethod
-    def logout():
+    def logout(self):
         MDApp.get_running_app().stop()
+        SignUPApp().run()
 
     def cast_vote(self, obj):
         a = []
@@ -634,6 +650,12 @@ class SignUPApp(MDApp):
         self.dialog.dismiss()
         MDApp.get_running_app().root.current = 'signupscreen3'
 
+    def face_detect(self, obj):
+        self.dialog.dismiss()
+        MDApp.get_running_app().root.current = 'signupscreen3'
+        self.image_id = self.imgPath
+        # self.detection()
+
     def close(self, obj):
         MDApp.get_running_app().stop()
 
@@ -642,6 +664,7 @@ class SignUPApp(MDApp):
         MDApp.get_running_app().stop()
 
     def detection(self):
+        self.dialog.dismiss()
         global y, h, w, x
         cap = cv2.VideoCapture(0)
         count = 1
@@ -650,6 +673,7 @@ class SignUPApp(MDApp):
         print(directory)
 
         while 1:
+            k = cv2.waitKey(1) & 0xFF
             ret, img = cap.read()
             img = cv2.flip(img, 1)
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -661,18 +685,38 @@ class SignUPApp(MDApp):
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 255), 2)
                 cv2.putText(img, 'Face Detected', (x + 20, y + h + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255),
                             2, cv2.LINE_AA)
+                if k == ord('s'):
+                    for i in range(0, 1):
+                        i = count
 
+                        cv2.imwrite('user.' + directory + ".jpg", gray[y:y + h, x:x + w])
+
+                        count += 1
+                    break
             cv2.imshow('img', img)
-            k = cv2.waitKey(1) & 0xFF
-
+            if (x, y, w, h) not in faces:  # ek dafa andar indent krke run. close then place this
+                # block like current position again
+                if k == ord('s'):
+                    print('no face')
+                    cancel_btn_username_dialogue = MDFlatButton(text='Retry', on_release=self.close_username_dialog)
+                    self.dialog = MDDialog(title='Invalid Input', text='Please Enter a valid Input',
+                                           size_hint=(0.7, 0.2),
+                                           buttons=[cancel_btn_username_dialogue])
+                    self.dialog.open()
+                    return
+                # break
             if k == ord('s'):
-                for i in range(0, 1):
-                    i = count
-
-                    cv2.imwrite('user.' + directory + ".jpg", gray[y:y + h, x:x + w])
-
-                    count += 1
                 break
+            # k = cv2.waitKey(1) & 0xFF
+
+            # if k == ord('s'):
+            #     for i in range(0, 1):
+            #         i = count
+            #
+            #         cv2.imwrite('user.' + directory + ".jpg", gray[y:y + h, x:x + w])
+            #
+            #         count += 1
+            #     break
 
         cap.release()
         cv2.destroyAllWindows()
