@@ -83,30 +83,40 @@ ScreenManager:
                     
 <DetectionWindow>
     name:'detection'
+    
+    MDToolbar:
+        id: toolbar
+        title: 'Almost there!'
+        pos_hint: {"top": 1}
+        elevation:10
 
-    MDLabel:
-        text:'Almost there!'
-        color: rgba("#ffffff")
-        font_style:'H2'
-        pos:(30,250)
-        canvas.before:
-            Color:
-                rgb: 33/243, 150/243, 243/243
-            Rectangle:
-                pos: (0,500)
-                size: 900,250
+    # MDLabel:
+    #     text:'Almost there!'
+    #     color: rgba("#ffffff")
+    #     font_style:'H2'
+    #     pos:(30,250)
+    #     canvas.before:
+    #         Color:
+    #             rgb: 33/243, 150/243, 243/243
+    #         Rectangle:
+    #             pos: (0,500)
+    #             size: 900,250
 
     MDLabel:
         text:'Read the instructions carefully'
+        halign: 'center'
         color: rgba("#120639")
         font_style:'H3'
-        pos:(140,170)
+        pos_hint : {'center_x': 0.5, 'center_y': 0.85}
+        # pos:(140,170)
 
     MDLabel:
         text:'1.Inorder to proceed to voting window you need to validate the identification.\\n2.Press the identification button inorder to start the process.\\n3.Make sure to keep your head infront of the camera to avoid any \\n   inconvenience\\n4.Make sure you have adequate light so that the system does not\\n   reject your access.\\n5.However, if you are not sure to vote at this moment then press back button\\n   because once you enter you are obliged to vote\\n6.Incase if the system does not recognize your face for more than five\\n   seconds then you can press Q to quit\\n7.Dont forget to take your glasses off ;)'
         color: rgba("#120639")
+        halign: 'center'
         font_size:24
-        pos:(40,-35)
+        pos_hint : {'center_x': 0.5, 'center_y': 0.5}
+        # pos:(40,-35)
 
 
 
@@ -114,12 +124,12 @@ ScreenManager:
         text:'IDENTIFY'
         font_color: rgba("#ffffff")
         font_size:24
-        # pos_hint:{'center_x': 0.5, 'center_y': 0.4}
+        pos_hint:{'center_x': 0.3, 'center_y': 0.1}
         background_normal: ''
         background_color: rgba("#2196f3")
         size: 250, 50
         size_hint: None, None
-        pos:(530,30)
+        # pos:(530,30)
         on_press:
             app.printpress()
 
@@ -127,14 +137,14 @@ ScreenManager:
         text:'BACK'
         font_color: rgba("#ffffff")
         font_size:24
-        # pos_hint:{'center_x': 0.5, 'center_y': 0.4}
+        pos_hint:{'center_x': 0.75, 'center_y': 0.1}
         background_normal: ''
         background_color: rgba("#2196f3")
         size: 250, 50
         size_hint: None, None
-        pos:(100,30)
+        # pos:(100,30)
         on_press:
-            pass
+            app.logout()
 
 
 
