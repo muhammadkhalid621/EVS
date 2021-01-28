@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
+
 mail_content = '''Hello,
 Hope to find you in a pleasant state.
 In this mail we are sending the voting statistics.

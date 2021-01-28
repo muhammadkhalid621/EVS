@@ -1,4 +1,5 @@
 help_str = '''
+
 ScreenManager:
     LogoScreen
     LoginScreen1

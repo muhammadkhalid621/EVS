@@ -2,6 +2,7 @@ screen_helper = '''
 #:import CardTransition kivy.uix.screenmanager.CardTransition
 #:import FallOutTransition kivy.uix.screenmanager.FallOutTransition
 #:import NoTransition kivy.uix.screenmanager.NoTransition
+
 ScreenManager:
     LogoScreen
     LoginScreen:
